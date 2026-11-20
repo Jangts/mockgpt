@@ -1,0 +1,77 @@
+{
+  "name": "@jangts/mock-gpt-playground",
+  "version": "0.2.3",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test test/*.test.mjs",
+    "prepack": "node scripts/prepare-package.mjs",
+    "build": "vite build",
+    "deploy": "node scripts/deploy.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 2333 --strictPort"
+  },
+  "dependencies": {
+    "@awesome.me/webawesome": "^3.0.0",
+    "@jangts/mock-gpt": "0.2.2",
+    "dompurify": "^3.4.17",
+    "lit": "^3.3.0",
+    "marked": "^11.2.0",
+    "vite": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "jsdom": "^26.1.0",
+    "typescript": "~6.0.2"
+  },
+  "description": "Static browser playground for MockGPT rules, generators and streaming interactions",
+  "license": "MIT",
+  "bin": {
+    "mock-gpt-playground": "./bin/mock-gpt-playground.mjs"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "docs/assets",
+    "docs/static-hosting.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "homepage": "https://mockgpt-playground.pages.jangts.cafe/",
+  "keywords": [
+    "mockgpt",
+    "playground",
+    "llm",
+    "ai",
+    "mock",
+    "mocking",
+    "api-mocking",
+    "testing",
+    "developer-tools",
+    "interactive-demo",
+    "chat",
+    "chat-completions",
+    "tool-calling",
+    "sse",
+    "streaming",
+    "static-site",
+    "typescript",
+    "vite",
+    "lit"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jangts/mockgpt.git",
+    "directory": "apps/mock-gpt-playground"
+  },
+  "bugs": {
+    "url": "https://github.com/Jangts/mockgpt/issues"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "mock-gpt": {
+    "name": "@jangts/mock-gpt",
+    "environment": "node",
+    "description": "Response generation SDK for browser/Node, input-aware generators and optional Node HTTP/web adapters",
+    "consumers": [
+      "mock-gpt-playground"
+    ],
+    "packageConsumers": []
+  }
+}

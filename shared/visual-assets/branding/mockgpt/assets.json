@@ -1,0 +1,59 @@
+{
+  "name": "MockGPT",
+  "status": "approved",
+  "approvedAt": "2026-11-04",
+  "colors": {
+    "symbol": "#11977b",
+    "wordmark": "#152b45"
+  },
+  "masterPath": "M-75.00000000 -43.30127019L-75.00000000 -109.90381057L-57.67949192 -119.90381057L0.00000000 -86.60254038L57.67949192 -119.90381057L75.00000000 -109.90381057L75.00000000 -43.30127019L36.00000000 -20.78460969L36.00000000 -62.35382907L0.00000000 -41.56921938L-36.00000000 -62.35382907L-36.00000000 -20.78460969Z",
+  "rotations": [
+    0,
+    120,
+    240
+  ],
+  "tipCutDistance": 20,
+  "seamWidth": 5,
+  "artworks": [
+    {
+      "id": "icon",
+      "svg": "mockgpt-icon.svg",
+      "png": "mockgpt-icon.png",
+      "size": [
+        64,
+        64
+      ],
+      "background": "transparent"
+    },
+    {
+      "id": "logo",
+      "svg": "mockgpt-logo.svg",
+      "png": "mockgpt-logo.png",
+      "size": [
+        720,
+        285
+      ],
+      "background": "transparent"
+    },
+    {
+      "id": "m-unit",
+      "svg": "mockgpt-m-unit.svg",
+      "png": "mockgpt-m-unit.png",
+      "size": [
+        960,
+        640
+      ],
+      "background": "transparent"
+    },
+    {
+      "id": "construction",
+      "svg": "mockgpt-construction.svg",
+      "png": "mockgpt-construction.png",
+      "size": [
+        2760,
+        1540
+      ],
+      "background": "white"
+    }
+  ]
+}

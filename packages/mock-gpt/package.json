@@ -1,0 +1,85 @@
+{
+  "name": "@jangts/mock-gpt",
+  "version": "0.2.2",
+  "description": "Configurable mock response SDK for browser and Node with optional API adapters",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "skills",
+    "docs",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./node": {
+      "types": "./dist/esm/node.d.ts",
+      "import": "./dist/esm/node.js",
+      "require": "./dist/cjs/node.js"
+    },
+    "./web": {
+      "types": "./dist/esm/web.d.ts",
+      "import": "./dist/esm/web.js",
+      "require": "./dist/cjs/web.js"
+    }
+  },
+  "bin": {
+    "mock-gpt": "./bin/mock-gpt.cjs"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "node scripts/clean.mjs && tsc -p tsconfig.json && tsc -p tsconfig.cjs.json && node scripts/finalize.mjs",
+    "test": "node --test test/*.test.mjs",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "openai": "^7.45.1",
+    "typescript": "~6.0.2"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "linkedom": "^0.18.14"
+  },
+  "homepage": "https://mockgpt-docs.pages.jangts.cafe/",
+  "keywords": [
+    "mockgpt",
+    "mock",
+    "mocking",
+    "llm",
+    "ai",
+    "testing",
+    "test-double",
+    "api-mocking",
+    "openai-compatible",
+    "chat-completions",
+    "tool-calling",
+    "function-calling",
+    "sse",
+    "streaming",
+    "synthetic-data",
+    "typescript",
+    "nodejs",
+    "browser"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jangts/mockgpt.git",
+    "directory": "packages/mock-gpt"
+  },
+  "bugs": {
+    "url": "https://github.com/Jangts/mockgpt/issues"
+  }
+}

@@ -1,0 +1,143 @@
+/* Loaded by the document and each app-owned shadow root. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Keep scroll behavior local; only normalize the scrollbar appearance. */
+:root,
+:host {
+  --scrollbar-thumb: color-mix(in srgb, var(--wa-color-text-normal, #64748b) 28%, transparent);
+}
+
+*,
+:host,
+wa-textarea::part(textarea),
+wa-drawer::part(body) {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+/* Standard thin sizing overrides pixel widths in Chromium, so use the
+   native pseudo-elements there. Other engines retain the thin fallback. */
+@supports selector(::-webkit-scrollbar) {
+  *,
+  :host,
+  wa-textarea::part(textarea),
+  wa-drawer::part(body) {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+}
+
+*::-webkit-scrollbar,
+:host::-webkit-scrollbar,
+wa-textarea::part(textarea)::-webkit-scrollbar,
+wa-drawer::part(body)::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner,
+:host::-webkit-scrollbar-track,
+:host::-webkit-scrollbar-corner,
+wa-textarea::part(textarea)::-webkit-scrollbar-track,
+wa-textarea::part(textarea)::-webkit-scrollbar-corner,
+wa-drawer::part(body)::-webkit-scrollbar-track,
+wa-drawer::part(body)::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb,
+:host::-webkit-scrollbar-thumb,
+wa-textarea::part(textarea)::-webkit-scrollbar-thumb,
+wa-drawer::part(body)::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 1px solid transparent;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-button,
+:host::-webkit-scrollbar-button,
+wa-textarea::part(textarea)::-webkit-scrollbar-button,
+wa-drawer::part(body)::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+:where(button, input, textarea, select) {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  text-transform: none;
+}
+
+:where(button) {
+  text-align: inherit;
+  cursor: pointer;
+}
+
+:where(button:disabled) {
+  cursor: not-allowed;
+}
+
+:where(a) {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(a, button, input, textarea, select, summary, [tabindex]):focus {
+  outline: none;
+}
+
+/* Keyboard focus uses an inset indicator instead of a second outer border. */
+:where(a, button, summary, [tabindex]):focus-visible {
+  box-shadow: inset 0 0 0 2px var(--wa-color-focus, #2563eb);
+}
+
+:where(input, textarea, select):focus {
+  border-color: var(--wa-color-focus, #2563eb);
+}
+
+input::-webkit-search-decoration,
+input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/* Web Awesome has separate shadow roots; style its public control parts. */
+wa-button {
+  --wa-button-transform-hover: none;
+  --wa-button-transform-active: none;
+}
+
+wa-button::part(base),
+wa-copy-button::part(button),
+wa-textarea::part(base),
+wa-textarea::part(textarea),
+wa-drawer::part(close-button) {
+  outline: none;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+wa-button::part(base):focus-visible,
+wa-copy-button::part(button):focus-visible,
+wa-drawer::part(close-button):focus-visible {
+  box-shadow: inset 0 0 0 2px var(--wa-color-focus, #2563eb);
+}
+
+wa-textarea:focus-within::part(base) {
+  border-color: var(--wa-color-focus, #2563eb);
+}

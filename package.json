@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:packages": "node development/scripts/workspace/build-packages.mjs",
+    "check:workspace": "node development/scripts/workspace/check.mjs",
+    "format": "prettier --ignore-unknown --write \"apps/**\" \"packages/**\" \"shared/**\"",
+    "format:check": "prettier --ignore-unknown --check \"apps/**\" \"packages/**\" \"shared/**\"",
+    "test:packages": "npm test --workspace @jangts/mock-gpt",
+    "test:playground": "npm test --workspace @jangts/mock-gpt-playground",
+    "mockgpt:playground": "npm run dev --workspace @jangts/mock-gpt-playground",
+    "build:playground": "npm run build --workspace @jangts/mock-gpt-playground",
+    "test:agent-audit": "node development/scripts/agent/audit-libraries.mjs"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10",
+    "proper-lockfile": "4.1.2",
+    "c8": "^12.0.0",
+    "@bcoe/v8-coverage": "^1.0.2"
+  }
+}
