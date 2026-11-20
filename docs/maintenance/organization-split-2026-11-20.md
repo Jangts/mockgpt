@@ -9,3 +9,7 @@ MockGPT SDK 和 MockGPT Playground 保留 packages/mock-gpt、apps/mock-gpt-play
 本项目已初始化 main 分支并连接私有远端 Jangts/mockgpt，采用拆分内容的初始快照，不复制网站的完整 Git 历史。临时结果、依赖、编译产物和本机配置不纳入初始快照。
 
 独立 npm ci、SDK 构建、workspace／依赖边界检查、Playground 类型检查与生产构建通过；Playground 86 项测试通过。未执行 SDK 完整行为回归、真实外部模型调用或浏览器视觉验收。
+
+## 仓库开源
+
+按用户确认，Jangts/mockgpt 已设为公开仓库，并通过 GitHub 匿名接口核对可访问。MockGPT SDK 与 Playground 共用该仓库，分别保留 MIT 许可。实际部署配置保留为本机忽略文件，仓库提供通用示例。已发布 npm 包的名称、版本与公开入口保持；本次不发布 npm 或部署站点。文档仓库 Jangts/jangts-lib-docs 与网站主仓库 Jangts/jangts 保持私有。
