@@ -1,7 +1,7 @@
 /**
  * Playground 静态站点发布脚本：构建 mock-gpt 与 playground，打包 dist，经 scp 上传后
  * 在目标机执行 deploy-remote.py 校验并替换 Pages 站点。目标主机、路径与 SSH 身份来自
- * scripts/deploy.config.json，不做证书或 NPM 配置变更。
+ * 本机忽略文件 scripts/deploy.config.json（由相邻 example 复制），不做证书或 NPM 配置变更。
  */
 import { spawnSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -12,7 +12,6 @@ import { fileURLToPath } from 'node:url';
 
 const app = fileURLToPath(new URL('../', import.meta.url));
 const root = fileURLToPath(new URL('../../../', import.meta.url));
-const config = JSON.parse(readFileSync(new URL('./deploy.config.json', import.meta.url), 'utf8'));
 
 /** 运行外部命令并复用父进程标准流；失败时抛出错误并带上退出码或信号。 */
 function run(command, args, options = {}) {
@@ -43,6 +42,7 @@ function manifest(directory, prefix = '') {
 
 /** 校验配置并执行完整发布流程；临时上传包在收尾时清理。 */
 function deploy() {
+  const config = JSON.parse(readFileSync(new URL('./deploy.config.json', import.meta.url), 'utf8'));
   if (!/^[a-z_][a-z0-9_-]*@[a-z0-9][a-z0-9.-]*$/i.test(config.host))
     throw new Error('Invalid SSH host');
   if (!/^[a-z0-9-]+$/.test(config.site)) throw new Error('Invalid Pages site name');
@@ -105,7 +105,7 @@ function deploy() {
 
 if (process.argv.includes('--help')) {
   console.log(
-    'Usage: npm run deploy --workspace @jangts/mock-gpt-playground\nBuild MockGPT and Playground, pack dist, upload with scp, verify and replace this Pages site over SSH.\nTarget and identity path: scripts/deploy.config.json. No NPM or certificate changes.',
+    'Usage: npm run deploy --workspace @jangts/mock-gpt-playground\nBuild MockGPT and Playground, pack dist, upload with scp, verify and replace this Pages site over SSH.\nCopy scripts/deploy.config.example.json to scripts/deploy.config.json and configure the target and identity path locally. No NPM or certificate changes.',
   );
 } else if (process.argv.length > 2) {
   console.error('Unknown arguments; use --help.');

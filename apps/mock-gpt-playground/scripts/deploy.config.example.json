@@ -1,0 +1,6 @@
+{
+  "host": "deploy@example.com",
+  "identity": "/path/to/ssh-key",
+  "pagesRoot": "/srv/pages",
+  "site": "mockgpt-playground"
+}

@@ -37,7 +37,7 @@ To build, package, and upload to this repository’s Pages host, run from the wo
 npm run deploy --workspace @jangts/mock-gpt-playground
 ```
 
-You can also run `npm run deploy` from this application directory. The entry point is `scripts/deploy.mjs`. `scripts/deploy.config.json` contains the target server, SSH key path, Pages root, and site name. It stores credential paths only, never keys; update paths when moving computers. Local requirements: Node/npm, tar, and OpenSSH. Server requirements: Python 3.9+ and existing sudo access.
+You can also run `npm run deploy` from this application directory. The entry point is `scripts/deploy.mjs`. Copy `scripts/deploy.config.example.json` to `scripts/deploy.config.json`, then set the target server, SSH key path, Pages root, and site name locally. The actual configuration is ignored by Git and stores credential paths only, never keys; update paths when moving computers. Local requirements: Node/npm, tar, and OpenSSH. Server requirements: Python 3.9+ and existing sudo access.
 
 The script builds the MockGPT SDK and Playground in order, archives only `dist/` into a temporary file, uploads it with `scp`, and verifies the archive and every file using SHA-256 over SSH. After verification it replaces `pages/mockgpt-playground/` and removes old output and temporary files. Failed verification preserves the current site. A per-site lock prevents concurrent deployments; other sites and the shared 404 are unaffected. It does not modify NPM, DNS, certificates, or restart services. Deployment scripts are repository maintenance tools and are not distributed in the npm package.
 
@@ -117,7 +117,7 @@ mock-gpt-playground
 npm run deploy --workspace @jangts/mock-gpt-playground
 ```
 
-也可在本应用目录执行 `npm run deploy`。入口为 `scripts/deploy.mjs`，目标服务器、SSH 密钥路径、Pages 根目录和站点名集中在 `scripts/deploy.config.json`；配置只保存凭据路径，不保存密钥。换电脑时按实际位置修改路径。需要本机 Node/npm、tar、OpenSSH，服务器需要 Python 3.9+ 和已有的 sudo 权限。
+也可在本应用目录执行 `npm run deploy`。入口为 `scripts/deploy.mjs`；先将 `scripts/deploy.config.example.json` 复制为 `scripts/deploy.config.json`，再在本机设置目标服务器、SSH 密钥路径、Pages 根目录和站点名。实际配置由 Git 忽略，只保存凭据路径，不保存密钥。换电脑时按实际位置修改路径。需要本机 Node/npm、tar、OpenSSH，服务器需要 Python 3.9+ 和已有的 sudo 权限。
 
 脚本顺序构建 MockGPT SDK 和 Playground，仅将 `dist/` 打成临时压缩包，通过 `scp` 上传，再通过 SSH 校验压缩包及每个文件的 SHA-256。校验通过后替换 `pages/mockgpt-playground/`，清除旧成品及本次临时文件；校验失败保留现有网站。同站点发布使用互斥锁，其他网站及共享 404 不受影响。不修改 NPM、DNS、证书或重启服务。部署脚本仅供仓库维护使用，不随 npm 包分发。
 

@@ -19,6 +19,9 @@
 /development/output/
 .external/
 
+# Local hosting target and SSH identity path; copy the adjacent example when needed.
+/apps/mock-gpt-playground/scripts/deploy.config.json
+
 # Workspace dependencies and build artifacts
 **/node_modules/
 **/dist/
