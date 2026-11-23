@@ -15,4 +15,4 @@
 
 素材身份、尺寸及母版几何保存在 assets.json。引用方通过各自的素材清单选择图标或组合图。
 
-SDK 与 Playground 的 README 使用组合图 PNG；Playground 顶栏、欢迎区和 favicon 使用独立图标 SVG。打包副本由 `development/scripts/site-sync/brand-assets.mjs` 的集中清单生成，不单独编辑；`node development/scripts/site-sync/brand-assets.mjs --write` 同步全部素材，`node development/scripts/site-sync/brand-assets.mjs --write` 仅同步品牌素材。
+SDK 与 Playground 的 README 使用组合图 PNG；Playground 顶栏、欢迎区和 favicon 使用独立图标 SVG。打包副本由 `development/scripts/site-sync/brand-assets.mjs` 的集中清单生成，不单独编辑；运行 `node development/scripts/site-sync/brand-assets.mjs --write` 同步本项目品牌素材。相邻 Pages 的文档站通过其素材清单直接读取本目录原件。

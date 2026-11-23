@@ -11,6 +11,9 @@ const read = async (file) => JSON.parse(await readFile(path.join(root, file), 'u
 const pkg = await read('package.json'),
   lock = await read('package-lock.json');
 const packages = await read('packages/catalog.json');
+for (const filename of ['pnpm-lock.yaml', 'yarn.lock', 'bun.lock', 'bun.lockb']) {
+  await assert.rejects(access(path.join(root, filename)), `Use only package-lock.json: ${filename}`);
+}
 assert.deepEqual(optionalLockProblems(lock), []);
 assert.deepEqual(pkg.workspaces, ['apps/*', 'packages/*']);
 assert.equal(
