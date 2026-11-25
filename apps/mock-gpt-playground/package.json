@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@awesome.me/webawesome": "^3.0.0",
-    "@jangts/mock-gpt": "0.2.2",
+    "@jangts/mock-gpt": "0.3.0",
     "dompurify": "^3.4.17",
     "lit": "^3.3.0",
     "marked": "^11.2.0",

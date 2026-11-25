@@ -17,3 +17,11 @@ MockGPT 的 records 是有界内存元数据快照，不自动落盘；容量、
 Playground 的模拟请求和展示状态由 Playground 持有，不以它们替代 SDK 的执行记录。shared/visual-assets/branding/mockgpt 保存本项目品牌原件；SDK 和 Playground 按同步清单独立打包副本。
 
 执行规则见[协作约定](../AGENTS.md)。源码检查、类型、离线协议、本机服务、实时网页与视觉结果分别记录。入口存在不表示本次已经执行。
+
+## 多协议与生命周期
+
+- [独立 wire 合同](../packages/mock-gpt/test/multi-protocol-wire.test.mjs)：原生字段、终态与 SSE；不以消费者 decoder 作为唯一依据。
+- [可选 Agent Core 消费者](../packages/mock-gpt/test/multi-protocol-agent-core.test.mjs)：实际 MockGPT.fetch 接入公开消费者；不形成生产依赖。
+- [后台／Batch／文件](../packages/mock-gpt/test/multi-protocol-lifecycle.test.mjs)：实例资源、稳定 ID、取消及故障。
+- [实时与 WS](../packages/mock-gpt/test/multi-protocol-realtime.test.mjs)：duplex 与实际 socket 的证据分别解释；不代表真实媒体。
+- [公开多协议说明](../packages/mock-gpt/docs/multi-protocol.md)与[可运行示例](../packages/mock-gpt/examples/multi-protocol.mjs)。

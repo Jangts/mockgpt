@@ -74,7 +74,7 @@ Copied modules import only SDK values and types they actually use. Regressions t
 
 ## Examples and sessions
 
-Includes 35 examples. The prompt list and configuration panel share one scenario declaration. Each page has its own MockGPT instance. Refreshing resets rule counts; clearing chat only removes page messages. Images use local SVG mock data. Image and table replies use Markdown, and copy buttons preserve raw text. Tool proposals are displayed only, never executed.
+Includes 36 examples. The prompt list and configuration panel share one scenario declaration. Each page has its own MockGPT instance. Refreshing resets rule counts; clearing chat only removes page messages. Images use local SVG mock data. Image and table replies use Markdown, and copy buttons preserve raw text. Tool proposals are displayed only, never executed.
 
 Data and content examples draw from larger candidate pools: 40 names, 30 drinks (including 24 coffees), 20 biographies, and varied story, task, city, and book themes. Users and orders within a batch do not repeat candidates; coffee recommendations select only coffee items. Selection uses MockGPT’s seeded random source; fixed seed, clock, and request order reproduce results. Summaries remain input-derived, while fault and sequence scenarios remain stable.
 
@@ -154,6 +154,6 @@ MockGPT 可独立用于前端或 Node 程序，也提供可选的模型 SDK fetc
 
 ## 示例与会话
 
-内置 35 个示例，提示词列表和配置面板使用同一份场景声明。每个页面拥有独立 MockGPT 实例；刷新页面会清空规则计数，清空聊天只清理页面消息。图片使用本地 SVG 模拟数据；图片和表格回复采用 Markdown，复制按钮保留原始文本。工具提议仅展示，不实际执行。
+内置 36 个示例，提示词列表和配置面板使用同一份场景声明。每个页面拥有独立 MockGPT 实例；刷新页面会清空规则计数，清空聊天只清理页面消息。图片使用本地 SVG 模拟数据；图片和表格回复采用 Markdown，复制按钮保留原始文本。工具提议仅展示，不实际执行。
 
 资料与内容示例使用更丰富的候选池：40 个姓名、30 种饮品（其中 24 种咖啡）、20 条个人简介，以及不同故事、待办、城市和书籍主题。同一批用户和订单不重复抽取候选；咖啡推荐只选择咖啡品类。随机选择使用 MockGPT 的 seed 随机源，固定 seed、时钟和请求顺序可重现结果。摘要仍根据输入提取，故障与顺序场景保持稳定。

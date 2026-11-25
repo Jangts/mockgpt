@@ -7,11 +7,13 @@ import {
   MockGPTError,
   ResponseDescription,
   responses,
+  findProtocol,
   type GenerationInput,
   type ModelOutput,
   type ModelRequest,
   type HttpFault,
   type OutputOptions,
+  type ScenarioOutput,
 } from '@jangts/mock-gpt';
 import { encodeModelResponse as encodeModel } from '@jangts/mock-gpt';
 import { delay, jsonText } from './stream-utils.ts';
@@ -39,7 +41,8 @@ export function createPlaygroundFetch(
   return async (input, init) => {
     const request = new Request(input, init);
     request.signal.throwIfAborted();
-    if (!['/v1/chat/completions', '/chat/completions'].includes(new URL(request.url).pathname))
+    const codec = findProtocol(new URL(request.url).pathname);
+    if (codec?.id !== 'chat-completions')
       return Response.json({ error: { message: 'Unknown model route' } }, { status: 404 });
     if (request.method !== 'POST')
       return Response.json({ error: { message: 'Expected POST' } }, { status: 405 });
@@ -69,6 +72,18 @@ export function createPlaygroundFetch(
     if (description.kind === 'http') {
       const fault = description.value as HttpFault;
       return Response.json(fault.body, { status: fault.status });
+    }
+    if (description.kind === 'scenario') {
+      const scenario = { ...streamDefaults, ...(description.value as ScenarioOutput) };
+      await delay(scenario.delayMs ?? 0, request.signal);
+      return codec.encode(
+        { ...value, stream: value.stream ?? false } as ModelRequest,
+        scenario,
+        id,
+        Math.floor(Date.now() / 1000),
+        request.signal,
+        () => {},
+      );
     }
     const result: ModelOutput = { ...streamDefaults, ...(description.value as ModelOutput) };
     await delay(result.delayMs ?? 0, request.signal);

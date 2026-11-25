@@ -5,7 +5,7 @@ description: Create MockGPT preview, development or regression configurations fr
 
 # MockGPT configuration
 
-Read the installed package's [usage and API](../../README.md) before generating code. Use only exports present in that version. MockGPT simulates Chat Completions; it does not run a real LLM or execute tools.
+Read the installed package's [usage and API](../../README.md) before generating code. Use only exports present in that version. MockGPT simulates configured native model protocols; it does not run a real LLM or execute tools. Read [multi-protocol usage](../../docs/multi-protocol.md) for protocol paths, ordered scenarios and optional lifecycles.
 
 Accept whichever evidence exists: requirements, user stories, design/interface documents, Agent source, tests or representative model requests. Code, recordings and a fixture collection are not prerequisites.
 
@@ -28,3 +28,7 @@ Use the consumer's existing test framework when requested and available. If none
 Keep default deliverables small: a readable configuration plus connection/preview instructions, with tests only when needed. Preserve privacy: do not copy full private conversations, keys or arbitrary production uploads into the published package. Real recordings are optional; sanitized minimal samples are enough for protocol regression.
 
 Describe covered scenarios, assumptions and omissions. Mock success proves configured program paths, not real-model understanding, summary quality or exhaustive natural-language coverage.
+
+For multiple protocols, reuse one rule/scenario and change native client configuration. Use `responses.scenario({items})` for ordered text/function-call/thinking/media/search/refusal items; check codec capabilities before choosing items. Never combine scenario items with legacy content/tools. Preserve signatures outside prompt text and keep provider search distinct from locally authorized tool execution. Do not infer protocol from model names.
+
+Enable `lifecycle` only for background/Batch/files. Fix clock and synthetic scope for deterministic tests; query/download/cancel must not consume new generations. Model accepted-but-lost confirmation explicitly, never retry it as if nothing was submitted. Realtime uses `createMockDuplex` or the Node WebSocket entry; close connections and independently cancel remote tasks. JSON/datachannel frames do not prove SDP, device, codec or real media support. Keep wire, injected-fetch, actual HTTP/WS and real-media evidence separate.

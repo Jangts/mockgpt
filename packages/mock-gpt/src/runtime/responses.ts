@@ -14,6 +14,8 @@ import {
   type JsonValue,
   type HttpFault,
 } from '../types.js';
+import { scenario as scenarioDescription, snapshotScenario } from './scenario.js';
+import type { ScenarioOutput } from '../types.js';
 import { MockGPTError, cloneJson, integer, breakWhile } from '../shared/utils.js';
 
 /**
@@ -97,6 +99,12 @@ export function output(value: ModelOutput): ResponseDescription {
  * the descriptor vocabulary stays enumerable in one place.
  */
 const descriptions = {
+  scenario: (value: ResponseDescription['value']) => {
+    const copy = snapshotScenario(value as ScenarioOutput);
+    const { items, ...options } = copy;
+    output(options);
+    return scenarioDescription(copy);
+  },
   model: (value: ResponseDescription['value']) => output(value as ModelOutput),
   http: (value: ResponseDescription['value']) => {
     const fault = value as HttpFault;
@@ -147,6 +155,8 @@ export function snapshotDescription(value: ResponseDescription): ResponseDescrip
  * the first request.
  */
 export const responses = {
+  /** Create a portable ordered result, with the same framing options as text. */
+  scenario: (value: ScenarioOutput) => descriptions.scenario(value),
   /**
    * @param content Assistant text, sent as a single message body or chunked into SSE deltas.
    * @param options Framing and timing overrides for the reply.

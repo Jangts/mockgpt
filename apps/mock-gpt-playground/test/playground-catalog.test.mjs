@@ -78,6 +78,15 @@ for (const scenario of playgroundScenarios)
       else {
         const wire = await response.text();
         assert.match(wire, /data: \[DONE\]/);
+        if (scenario.id === 'ordered-scenario') {
+          const deltas = wire.split('\n')
+            .filter(line => line.startsWith('data: {'))
+            .map(line => JSON.parse(line.slice(6)).choices[0]?.delta);
+          assert.equal(deltas.map(delta => delta?.content ?? '').join(''), '我先查一下库存。');
+          assert.equal(deltas.flatMap(delta => delta?.tool_calls ?? [])
+            .map(call => call.function.name ?? '').join(''), 'lookupStock');
+          assert.ok(deltas.findIndex(delta => delta?.content) < deltas.findIndex(delta => delta?.tool_calls));
+        }
         if (scenario.id === 'usage') assert.match(wire, /"total_tokens":20/);
         if (scenario.id === 'length' || scenario.id === 'filter')
           assert.match(

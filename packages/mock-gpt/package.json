@@ -1,7 +1,7 @@
 {
   "name": "@jangts/mock-gpt",
-  "version": "0.2.2",
-  "description": "Configurable mock response SDK for browser and Node with optional API adapters",
+  "version": "0.3.0",
+  "description": "Scenario-driven mock SDK for model APIs, streaming, batches and realtime sessions",
   "license": "MIT",
   "type": "commonjs",
   "engines": {
@@ -12,7 +12,8 @@
     "bin",
     "skills",
     "docs",
-    "README.md"
+    "README.md",
+    "examples"
   ],
   "sideEffects": false,
   "exports": {
@@ -51,7 +52,9 @@
   },
   "dependencies": {
     "@mozilla/readability": "^0.6.0",
-    "linkedom": "^0.18.14"
+    "linkedom": "^0.18.14",
+    "ws": "^8.23.0",
+    "@types/ws": "^8.18.2"
   },
   "homepage": "https://mockgpt-docs.pages.jangts.cafe/",
   "keywords": [
@@ -72,7 +75,13 @@
     "synthetic-data",
     "typescript",
     "nodejs",
-    "browser"
+    "browser",
+    "responses-api",
+    "anthropic",
+    "gemini",
+    "batch",
+    "realtime",
+    "websocket"
   ],
   "repository": {
     "type": "git",

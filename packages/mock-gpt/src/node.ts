@@ -7,3 +7,5 @@
  */
 export { createMockServer, createMockHandler } from './node/server.js';
 export type { ServerOptions, HandlerOptions } from './node/server.js';
+export { createMockWebSocketServer } from './node/websocket.js';
+export type { MockWebSocketServerOptions } from './node/websocket.js';

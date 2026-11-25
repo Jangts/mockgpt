@@ -60,6 +60,24 @@ console.log((await response.json()).choices[0].message.content);
 
 `require('@jangts/mock-gpt')` is also supported. `mock.fetch` is bound and can be injected into model SDKs supporting custom fetch. It does not intercept networking globally or forward requests to real models. Supports `POST /v1/chat/completions` and `POST /chat/completions`, JSON, and SSE with `stream: true`.
 
+## Multiple protocols and lifecycles
+
+Use the same rules with Chat Completions, OpenAI Responses, Claude Messages, Gemini generateContent or Interactions. `mock.fetch` selects the codec from the request path; the request body uses that protocol's native shape. `responses` is the response-description helper; `responses.scenario()` describes ordered output and is distinct from the Responses API.
+
+```js
+import { MockGPT, responses } from '@jangts/mock-gpt';
+const mock = new MockGPT({
+  rules: [{ generator: responses.scenario({ items: [{ type: 'text', text: 'hello' }] }) }],
+});
+const response = await mock.fetch('https://mock.invalid/v1/responses', {
+  method: 'POST',
+  body: JSON.stringify({ model: 'mock', input: 'Hello' }),
+});
+console.log((await response.json()).output[0].content[0].text); // hello
+```
+
+See [protocols, background, Batch and realtime](docs/multi-protocol.md) for native paths, optional lifecycle configuration, ordered tools/signatures/media, resource scope and cancellation. Run the offline example in Node >=22.12 with `node node_modules/@jangts/mock-gpt/examples/multi-protocol.mjs`. Simulation does not prove real-model behavior, native schema enforcement, cloud storage or media encoding.
+
 ## Playground configuration demo
 
 Install [MockGPT Playground](https://www.npmjs.com/package/@jangts/mock-gpt-playground) to try output and learn rule and generator configuration. This standalone visual developer tool lets you choose example prompts, inspect matching parameters and generators, and copy configuration or complete source. Try JSON, Markdown images and tables, tool proposals, streaming chunks, and failure scenarios.
@@ -240,7 +258,7 @@ Web sources use only Node HTTP requests, without installing or launching browser
 
 Built-in web-source diagnostics retain at most 512 code points each for requested and final URLs, marking truncation with `urlTruncated: true`. Actual requests use full URLs so long addresses do not exhaust diagnostics budgets and interfere with body processing.
 
-`mock.counts` returns rule hit counts; `mock.activeRequests` counts ongoing generation and, with the optional fetch adapter, unconsumed SSE. Requests are released when responses finish reading, bodies are cancelled, or requests are aborted. `reset()` fails while requests are active; otherwise it clears records, rule counts, and seed state, but not custom functions’ external closures. Remaining sequence capacity is its configured item count minus the corresponding hit count.
+`mock.counts` returns rule hit counts; `mock.activeRequests` counts ongoing generation and, with the optional fetch adapter, unconsumed SSE. Requests are released when responses finish reading, bodies are cancelled, or requests are aborted. `reset()` fails while requests are active; active lifecycle resources and connections also prevent reset. Otherwise it clears terminal resources, records, rule counts, and seed state, but not custom functions’ external closures. Remaining sequence capacity is its configured item count minus the corresponding hit count.
 
 Optional fetch request bodies default to a 1 MiB limit. Both entry paths default to 1,000,000 output code points, with serialized length used for tool descriptions. Configure `maxBodyBytes`/`maxOutputChars` to change these. Unmatched calls and generation errors reject in-process; HTTP wrappers map them to error responses with codes. Explicit `responses.reject` closes the HTTP connection directly to distinguish network failure from HTTP errors. Interrupted streams do not append a successful termination frame. Request-format and routing errors return the corresponding 4xx Response directly.
 
@@ -264,13 +282,13 @@ The `src/` root contains three public entry points (`index.ts`, `node.ts`, `web.
 | --- | --- |
 | `runtime/` | Rule matching, call state, Chat Completions requests and JSON/SSE response encoding, response declarations |
 | `generators/` | Generator registration, text extraction, tokenization, and summarization algorithms |
-| `node/` | Node HTTP request adapter and standalone model API server |
+| `node/` | Node HTTP adapter, standalone API server and WebSocket shell |
 | `sources/` | Web article sources, HTTP fetching, address validation, and compressed transfer |
 | `shared/` | JSON validation, cancellation, byte reading, errors, and other primitives |
 
 Internal modules import implementations directly; public entry points provide stable exports. Builds first clean the package’s generated `dist/` to avoid stale output after source moves.
 
-Responses/Anthropic APIs, schema-based data generation, remote configuration management, and a tool-execution framework are not provided. Further classification, Q&A, and outline generators remain future work; see [Design and phases](docs/design.md). See [MIT LICENSE](LICENSE) for licensing.
+Schema-based data generation, remote configuration management, and a tool-execution framework are not provided. Native protocol simulation is described in [Protocols and lifecycles](docs/multi-protocol.md). See [MIT LICENSE](LICENSE) for licensing.
 
 ---
 
@@ -333,6 +351,24 @@ console.log((await response.json()).choices[0].message.content);
 ```
 
 也可 `require('@jangts/mock-gpt')`。`mock.fetch` 已绑定，可直接注入支持自定义 fetch 的模型 SDK；不会全局拦截网络，也不把模型请求转发给真实模型。支持 `POST /v1/chat/completions` 与 `POST /chat/completions`，JSON 和 `stream: true` 的 SSE。
+
+## 多协议与生命周期
+
+同一组规则可用于 Chat Completions、OpenAI Responses、Claude Messages、Gemini generateContent 和 Interactions。`mock.fetch` 按请求路径选择 codec，请求正文采用对应协议的原生结构。`responses` 是输出描述器辅助对象，`responses.scenario()` 描述有序输出，与 Responses API 分别命名。
+
+```js
+import { MockGPT, responses } from '@jangts/mock-gpt';
+const mock = new MockGPT({
+  rules: [{ generator: responses.scenario({ items: [{ type: 'text', text: 'hello' }] }) }],
+});
+const response = await mock.fetch('https://mock.invalid/v1/responses', {
+  method: 'POST',
+  body: JSON.stringify({ model: 'mock', input: 'Hello' }),
+});
+console.log((await response.json()).output[0].content[0].text); // hello
+```
+
+原生路径、可选生命周期配置、有序工具／签名／媒体、资源作用域与取消见[多协议、后台、Batch 与实时](docs/multi-protocol.md#中文)。Node >=22.12 可运行离线示例：`node node_modules/@jangts/mock-gpt/examples/multi-protocol.mjs`。模拟不能证明真实模型行为、原生 schema 强约束、云端存储或媒体编码。
 
 ## Playground 配置演示
 
@@ -514,7 +550,7 @@ Node 执行抓取；`/web` 是 Node 专属入口。默认拒绝本机、私网�
 
 内置网页来源的请求／最终 URL 诊断各最多 512 码点，截短时标记 `urlTruncated: true`；实际网络请求仍使用完整地址，避免长 URL 耗尽诊断额度而影响正文处理。
 
-`mock.counts` 返回各规则命中次数，`mock.activeRequests` 统计生成中的调用；使用可选 `fetch` 适配时还包括未消费的 SSE。读取完响应、取消 body 或取消请求后释放。存在活动请求时 `reset()` 报错；否则清空记录、规则计数与 seed 状态，不重置自定义函数外部闭包。sequence 剩余量可由配置项数减去对应命中数判断。
+`mock.counts` 返回各规则命中次数，`mock.activeRequests` 统计生成中的调用；使用可选 `fetch` 适配时还包括未消费的 SSE。读取完响应、取消 body 或取消请求后释放。存在活动请求、后台任务或连接时 `reset()` 报错；否则清空终态资源、记录、规则计数与 seed 状态，不重置自定义函数外部闭包。sequence 剩余量可由配置项数减去对应命中数判断。
 
 可选 `fetch` 适配的请求体默认最多 1 MiB；两种入口的输出默认最多 1,000,000 码点（工具描述计序列化长度），可用 `maxBodyBytes`／`maxOutputChars` 配置。调用／匹配未命中和生成错误在进程内 reject；HTTP 壳映射为带 code 的错误响应。显式 `responses.reject` 在 HTTP 壳中直接关闭连接，以区别于 HTTP 错误响应；流中断也不会补成功终止帧。请求格式与路由错误直接返回相应 4xx Response。
 
@@ -538,10 +574,10 @@ JSON 快照最多 64 层、100,000 个值节点；超出复杂度的请求返回
 | --- | --- |
 | `runtime/` | 规则匹配、调用状态、Chat Completions 请求与 JSON／SSE 响应编码、响应声明 |
 | `generators/` | 生成器注册及文本提取、分词和摘要算法 |
-| `node/` | Node HTTP 请求适配与独立模型 API 服务 |
+| `node/` | Node HTTP 适配、独立 API 服务与 WebSocket 外壳 |
 | `sources/` | 网页正文来源、HTTP 抓取、地址校验与压缩传输 |
 | `shared/` | JSON 校验、取消、字节读取及错误等基础函数 |
 
 内部模块直接导入实现；公开入口负责稳定导出。构建先清理本包生成的 `dist/`，避免源码移动后旧产物残留。
 
-当前没有 Responses／Anthropic API、schema 造数、远程配置管理或工具执行框架。更多分类／问答／大纲生成器留待后续，详见[设计与分期](docs/design.md)。许可证见 [MIT LICENSE](LICENSE)。
+不提供 schema 造数、远程配置管理或工具执行框架。原生协议模拟见[多协议与生命周期](docs/multi-protocol.md#中文)。许可证见 [MIT LICENSE](LICENSE)。

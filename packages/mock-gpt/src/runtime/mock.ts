@@ -39,8 +39,12 @@ import {
   breakWhile,
   seeded,
 } from '../shared/utils.js';
-import { encodeModel, promptOf, routes, snapshotRequest } from './chat-completions.js';
+import { promptOf, snapshotRequest } from './chat-completions.js';
 import { output, snapshotDescription } from './responses.js';
+import { findProtocol } from '../protocols/catalog.js';
+import { normalizeScenario } from './scenario.js';
+import { LifecycleRuntime } from '../lifecycle/index.js';
+import type { ScenarioOutput } from '../types.js';
 import { charLength } from '../shared/text.js';
 
 interface RegisteredRule extends Rule {
@@ -100,8 +104,40 @@ export class MockGPT {
   private fallbackHits = 0;
   /** In-flight calls and streams; guards `reset` and backs `activeRequests`. */
   private active = 0;
+  private activeStreams = 0;
   /** Instance PRNG; re-seeded by `reset` so a reset run repeats the original sequence. */
   private random: () => number;
+  private lifecycle?: LifecycleRuntime;
+  private connections = new Set<() => void>();
+  private httpActions = 0;
+  private realtimeTurns = 0;
+
+  /** Detached accounting; transport actions never imply new generations. */
+  get stats() {
+    return {
+      httpActions: this.httpActions,
+      generations: this.next,
+      realtimeTurns: this.realtimeTurns,
+      activeStreams: this.activeStreams,
+      batchItems: 0,
+      activeConnections: this.connections.size,
+      activeOperations: this.lifecycle?.activeOperations ?? 0,
+      ...this.lifecycle?.stats,
+    };
+  }
+  /** Register a duplex lifetime so reset cannot invalidate a live connection. */
+  registerConnection(close: () => void): () => void {
+    if (this.connections.size >= (this.options.maxConnections ?? 16))
+      throw new MockGPTError('MOCK_RESOURCE_LIMIT', 'Connection limit exceeded');
+    this.connections.add(close);
+    return () => {
+      this.connections.delete(close);
+    };
+  }
+  /** Observe an explicitly admitted realtime response round. */
+  noteRealtimeTurn(): void {
+    this.realtimeTurns++;
+  }
 
   /**
    * Validate options and snapshot every rule.
@@ -165,10 +201,45 @@ export class MockGPT {
       maxBodyBytes: integer(options.maxBodyBytes ?? 1_048_576, 'maxBodyBytes', 1),
       maxOutputChars: integer(options.maxOutputChars ?? 1_000_000, 'maxOutputChars', 1),
     };
+    if (options.maxConnections !== undefined) integer(options.maxConnections, 'maxConnections', 1);
     if (options.seed !== undefined) integer(options.seed, 'seed', 0, 0xffffffff);
     this.fallback = options.fallback === undefined ? undefined : snapshot(options.fallback);
     // Default seed 1 keeps unseeded tests reproducible while still allowing variation.
     this.random = seeded(options.seed ?? 1);
+    if (options.lifecycle)
+      this.lifecycle = new LifecycleRuntime({
+        options: options.lifecycle,
+        maxBodyBytes: this.options.maxBodyBytes,
+        clock: options.clock,
+        generate: (input, signal) => this.generate(input, { signal }),
+        decode: (body, url) => {
+          const codec = findProtocol(url.pathname);
+          if (!codec) throw new MockGPTError('MOCK_ROUTE', 'Unknown generation route', 404);
+          return codec.decode(body, url);
+        },
+        encode: (input, generated, id) => {
+          const codec = findProtocol(String(input.wirePath ?? '/v1/responses'));
+          if (!codec) throw new MockGPTError('MOCK_ROUTE', 'Unknown result route', 404);
+          const value =
+            generated instanceof ResponseDescription
+              ? generated.value
+              : { content: typeof generated === 'string' ? generated : jsonText(generated) };
+          if (generated instanceof ResponseDescription && generated.kind === 'http') {
+            const fault = value as HttpFault;
+            return Response.json(fault.body, { status: fault.status });
+          }
+          if (generated instanceof ResponseDescription && generated.kind === 'reject')
+            throw new MockGPTError('MOCK_NETWORK', String(value));
+          return codec.encode(
+            input as GenerationContext['request'],
+            normalizeScenario(value as ModelOutput | ScenarioOutput),
+            id,
+            Math.floor(readClock(options.clock ?? Date.now) / 1000),
+            new AbortController().signal,
+            () => {},
+          );
+        },
+      });
   }
 
   /**
@@ -213,13 +284,16 @@ export class MockGPT {
    */
   reset(): void {
     breakWhile(
-      !!this.active,
+      !!this.active || !!this.connections.size || !!this.lifecycle?.activeOperations,
       () =>
         new MockGPTError(
           'MOCK_ACTIVE',
           'Cannot reset while a request or response stream is active',
         ),
     );
+    this.lifecycle?.reset();
+    this.httpActions = 0;
+    this.realtimeTurns = 0;
     this.history = [];
     this.historyStart = 0;
     this.next = 0;
@@ -244,10 +318,13 @@ export class MockGPT {
   readonly fetch: typeof fetch = async (input, init) => {
     const request = new Request(input, init);
     request.signal.throwIfAborted();
+    this.httpActions++;
+    const lifecycleResponse = await this.lifecycle?.handle(request);
+    if (lifecycleResponse) return lifecycleResponse;
     const path = new URL(request.url).pathname;
-    const route = routes.find((route) => route.path === path);
+    const route = findProtocol(path);
     if (!route) return errorResponse(new MockGPTError('MOCK_ROUTE', 'Unknown model route', 404));
-    if (route.method !== request.method)
+    if (request.method !== 'POST')
       return errorResponse(new MockGPTError('MOCK_METHOD', 'Expected POST', 405));
     let modelRequest;
     try {
@@ -258,7 +335,7 @@ export class MockGPT {
       } catch {
         throw new MockGPTError('MOCK_REQUEST', 'Invalid JSON', 400);
       }
-      modelRequest = freeze(snapshotRequest(value));
+      modelRequest = freeze(route.decode(value, new URL(request.url)));
     } catch (error) {
       // Cancellation wins over body/parse failures so callers see AbortError, not a 400.
       request.signal.throwIfAborted();
@@ -285,17 +362,17 @@ export class MockGPT {
           return response;
         }
         // Both the instance defaults and generated descriptor have already been validated and snapshotted.
-        const result: ModelOutput = {
+        const result: ModelOutput | ScenarioOutput = {
           ...this.options.stream,
-          ...(description.value as ModelOutput),
+          ...(description.value as ModelOutput | ScenarioOutput),
         };
         await delay(result.delayMs ?? 0, request.signal);
         request.signal.throwIfAborted();
         const now = clock();
         request.signal.throwIfAborted();
-        return encodeModel(
+        return route.encode(
           modelRequest,
-          result,
+          normalizeScenario(result),
           record.id,
           Math.floor(now / 1000),
           request.signal,
@@ -433,6 +510,7 @@ export class MockGPT {
       }
     }
     this.active++;
+    if (modelRequest.stream) this.activeStreams++;
     let ended = false;
     const finish = (...args: [error?: unknown, cancelled?: boolean]) => {
       const [error, cancelled = false] = args;
@@ -440,6 +518,7 @@ export class MockGPT {
       if (ended) return;
       ended = true;
       this.active--;
+      if (modelRequest.stream) this.activeStreams--;
       record.status = cancelled ? 'cancelled' : args.length ? 'error' : 'completed';
       if (cancelled) record.errorCode = 'MOCK_CANCELLED';
       else if (args.length) record.errorCode = codeOf(error);
@@ -481,12 +560,15 @@ export class MockGPT {
       // Validate a snapshot before returning data; transport descriptors stay inert here.
       const value = snapshot(generated as Generator);
       const model =
-        value instanceof ResponseDescription && value.kind === 'model'
+        value instanceof ResponseDescription &&
+        (value.kind === 'model' || value.kind === 'scenario')
           ? (value.value as ModelOutput)
           : undefined;
       // Output budget counts code points, not UTF-16 units, and includes serialized tool calls.
       const size = model
-        ? charLength(model.content ?? '', this.options.maxOutputChars) +
+        ? (value instanceof ResponseDescription && value.kind === 'scenario'
+            ? new TextEncoder().encode(jsonText(value.value)).length
+            : charLength(model.content ?? '', this.options.maxOutputChars)) +
           (model.tools ? jsonText(model.tools).length : 0)
         : charLength(
             typeof value === 'string'

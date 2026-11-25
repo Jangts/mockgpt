@@ -83,6 +83,19 @@ export const protocolScenarios: readonly PlaygroundScenario[] = [
     ...handlerExample('pairedTools'),
   },
   {
+    id: 'ordered-scenario',
+    label: '有序回复，先说明再提议工具',
+    covers: ['response.scenario'],
+    prompt: '模拟有序回复',
+    example: '模拟有序回复',
+    ...responseExample('scenario', {
+      items: [
+        { type: 'text', text: '我先查一下库存。' },
+        { type: 'function-call', name: 'lookupStock', arguments: { sku: 'demo' } },
+      ],
+    }),
+  },
+  {
     id: 'step',
     label: '连续发送三次依次回复，第四次报耗尽',
     covers: ['generator.sequence'],

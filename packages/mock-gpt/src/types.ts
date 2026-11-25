@@ -12,6 +12,8 @@
  * Any value accepted by the package's JSON snapshot rules: strings, finite numbers, booleans,
  * null, arrays and plain objects.
  */
+import type { LifecycleOptions } from './lifecycle/index.js';
+
 export type JsonValue =
   string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
@@ -44,6 +46,11 @@ export type Message = Readonly<{
  * injected `fetch`.
  */
 export interface ModelRequest {
+  /** Explicit wire identity and portable ordered input, separate from prompt text. */
+  readonly protocol?: string;
+  readonly native?: unknown;
+  readonly orderedInput?: readonly unknown[];
+  readonly toolResults?: readonly unknown[];
   /** Model identifier; required, non-empty, and compared verbatim by `Rule.model`. */
   readonly model: string;
   /** Non-empty conversation; the last `user` message supplies the default prompt. */
@@ -201,6 +208,10 @@ export interface Rule {
 
 /** Construction options of a `MockGPT` instance. */
 export interface MockGPTOptions {
+  /** Optional bounded background, batch and file resources. */
+  lifecycle?: LifecycleOptions;
+  /** Maximum simultaneous duplex connections; default 16. */
+  maxConnections?: number;
   /** Ordered rules; the first rule whose filters all pass wins, so order is significant. */
   rules: readonly Rule[];
   /**
@@ -280,7 +291,30 @@ export class ResponseDescription {
    * @param value Payload matching `kind`; validated by `responses.output` or `snapshotDescription`.
    */
   constructor(
-    readonly kind: 'model' | 'http' | 'reject',
-    readonly value: ModelOutput | HttpFault | string,
+    readonly kind: 'model' | 'scenario' | 'http' | 'reject',
+    readonly value: ModelOutput | ScenarioOutput | HttpFault | string,
   ) {}
+}
+
+/** Portable ordered result; signatures and provider search remain distinct from visible text. */
+export type ScenarioItem =
+  | { type: 'text'; text: string }
+  | { type: 'function-call'; id?: string; name: string; arguments: JsonValue }
+  | { type: 'thinking'; text: string; signature?: string }
+  | {
+      type: 'media';
+      modality: 'image' | 'audio' | 'video' | 'file';
+      uri: string;
+      mimeType?: string;
+    }
+  | {
+      type: 'search';
+      id?: string;
+      query: string;
+      sources: readonly { url: string; title?: string }[];
+    }
+  | { type: 'refusal'; text: string };
+/** An ordered scenario is an alternative to legacy content/tools, never an overlay. */
+export interface ScenarioOutput extends OutputOptions {
+  items: readonly ScenarioItem[];
 }

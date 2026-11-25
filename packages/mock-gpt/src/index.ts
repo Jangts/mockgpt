@@ -29,3 +29,18 @@ export type {
 } from './types.js';
 export type { TextSource, TextOptions } from './generators/text.js';
 export type { GenerationInput, GenerationOptions, ModelOutput, HttpFault } from './types.js';
+
+export type { ScenarioOutput, ScenarioItem } from './types.js';
+export { protocolCatalog, findProtocol } from './protocols/catalog.js';
+export type { LifecycleOptions } from './lifecycle/index.js';
+export { createMockDuplex } from './realtime/duplex.js';
+export { bindMockDataChannel } from './realtime/datachannel.js';
+export type {
+  MockDuplex,
+  MockDuplexOptions,
+  RealtimeProtocol,
+  RealtimeFrame,
+} from './realtime/duplex.js';
+export type { MockDataChannel } from './realtime/datachannel.js';
+export { lifecycleCatalog, lifecycleFaultCatalog } from './lifecycle/index.js';
+export type { ResourceLimits, LifecycleFault } from './lifecycle/index.js';
