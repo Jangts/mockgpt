@@ -4,9 +4,9 @@
 
 包源码和自身使用文档归 packages，应用归 apps，构建工具归 development/scripts，正式素材及必要原件归 shared/visual-assets。公共包以本项目的 packages/catalog.json 登记，build:packages 按登记顺序统一构建，check:workspace 核对登记、依赖、模块边界和双格式导出。
 
-开发依赖与构建产物分别由本目录自己的 npm workspace 和锁文件管理，不依赖网站的 node_modules。文档站归相邻 pages 项目；库的 README、API 手册、Skill 与维护记录仍随库源码维护。
+开发依赖与构建产物分别由本目录自己的 npm workspace 和锁文件管理，不依赖网站的 node_modules。文档站位于 `apps/mock-gpt-docs/`，从 `packages/mock-gpt/` 的源码和手册生成。
 
-规范和审查条目使用本项目 docs 下的完整副本，具体工具与产品规则见[项目检查入口](review-entrypoints.md)。跨项目资料输入按本文约定消费，不形成对其他项目协作规范的路径依赖。
+文档与执行规则见[协作约定](../AGENTS.md)，具体工具与产品规则见[项目检查入口](review-entrypoints.md)。跨项目资料输入按本文约定消费，不形成对其他项目协作规范的路径依赖。
 
 ## Jangts 组织协作
 

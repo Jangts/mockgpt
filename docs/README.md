@@ -6,7 +6,6 @@
 - [接口设计规范](interface-design-standard.md)：缺省、复用、代指、参数语义与渐进扩展。
 - [代码组织与职责](code-organization.md)：所有者、集中登记、编排与 handler、目录和依赖。
 - [前端结构规范](规范/01-工程目录与协作约定.md)：本项目界面代码适用的 S01—S20 规则。
-- [代码检查与验收标准](code-review-standard.md)：稳定检查编号、证据要求与验收状态。
 - [日志规范](logging-standard.md)：事实、隐私、错误、记录可靠性与宿主责任。
 - [图片素材规范](image-assets.md)：原件、副本、截图、无损处理与交付一致性。
 
@@ -17,4 +16,5 @@
 - [维护资料](maintenance/README.md)：文档归属和检查记录，与当前使用合同分别维护。
 
 - [MockGPT SDK](../packages/mock-gpt/README.md)。
+- [MockGPT 文档站](../apps/mock-gpt-docs/docs/deployment.md)。
 - [Playground](../apps/mock-gpt-playground/README.md)。

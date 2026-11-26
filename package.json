@@ -16,7 +16,11 @@
     "test:playground": "npm test --workspace @jangts/mock-gpt-playground",
     "mockgpt:playground": "npm run dev --workspace @jangts/mock-gpt-playground",
     "build:playground": "npm run build --workspace @jangts/mock-gpt-playground",
-    "test:agent-audit": "node development/scripts/agent/audit-libraries.mjs"
+    "test:agent-audit": "node development/scripts/agent/audit-libraries.mjs",
+    "docs:mock-gpt": "npm run dev --workspace @jangts/mock-gpt-docs --",
+    "build:docs:mock-gpt": "npm run build --workspace @jangts/mock-gpt-docs --",
+    "preview:docs:mock-gpt": "npm run preview --workspace @jangts/mock-gpt-docs --",
+    "check:docs:mock-gpt": "npm run check --workspace @jangts/mock-gpt-docs --"
   },
   "devDependencies": {
     "prettier": "^3.9.10",

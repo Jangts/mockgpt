@@ -1,6 +1,6 @@
 # MockGPT
 
-MockGPT SDK 与浏览器 Playground。保留原项目的应用与包目录层级。
+MockGPT SDK、浏览器 Playground 和双语文档站。
 
 | 目录 | 职责 |
 | --- | --- |
@@ -15,6 +15,6 @@ npm run test:packages
 npm run mockgpt:playground
 ```
 
-包的安装和 API 用法见 [MockGPT SDK](packages/mock-gpt/README.md)。文档站位于 [pages 项目](https://github.com/Jangts/jangts-docs/blob/main/README.md)，应用消费公开包入口。
+包的安装和 API 用法见 [MockGPT SDK](packages/mock-gpt/README.md)。双语文档站从本仓库的 SDK 源码生成。在仓库根目录执行 `npm run build:docs:mock-gpt`，详见[文档站维护说明](apps/mock-gpt-docs/docs/deployment.md)。
 
 文档入口见 [项目文档](docs/README.md)，目录职责与开发方式见 [Workspace 结构](docs/workspace.md)。

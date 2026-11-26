@@ -8,7 +8,7 @@
 | 网页来源 | [来源回归](../packages/mock-gpt/test/web.test.mjs)、[HTTP 传输](../packages/mock-gpt/test/web-transport.test.mjs) | 校验、地址策略与离线／本机传输；不保证实时网页可用 |
 | Playground | [模拟传输](../apps/mock-gpt-playground/test/simulated-fetch.test.mjs)、[配置示例](../apps/mock-gpt-playground/test/example-copy.test.mjs)、[静态构建合同](../apps/mock-gpt-playground/test/static-build.test.mjs) | 对应的交互配置与静态输出合同；不代表完整视觉验收 |
 | 全模块审计 | [审计入口](../development/scripts/agent/audit-libraries.mjs) | 本项目 MockGPT 全模块覆盖及既有阈值；按脚本参数决定是否构建，不自动运行 |
-| 品牌副本 | [素材同步清单](../development/scripts/site-sync/brand-assets.mjs) | shared 原件与 SDK／Playground 消费副本的一致性 |
+| 品牌副本 | [素材同步清单](../development/scripts/site-sync/brand-assets.mjs) | shared 原件与 SDK、Playground 和文档站的发布副本的一致性 |
 
 ## 诊断与素材
 

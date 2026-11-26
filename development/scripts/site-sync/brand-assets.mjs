@@ -9,10 +9,17 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
 // Shared originals are the only editable source; each consumer ships its own copy.
 export const brandAssets = [
   {
+    "source": "shared/visual-assets/branding/mockgpt/mockgpt-icon.png",
+    "copies": [
+      "apps/mock-gpt-docs/content/public/branding/mockgpt-icon.png"
+    ]
+  },
+  {
     "source": "shared/visual-assets/branding/mockgpt/mockgpt-logo.png",
     "copies": [
       "packages/mock-gpt/docs/assets/mockgpt-logo.png",
-      "apps/mock-gpt-playground/docs/assets/mockgpt-logo.png"
+      "apps/mock-gpt-playground/docs/assets/mockgpt-logo.png",
+      "apps/mock-gpt-docs/content/public/branding/mockgpt-logo.png"
     ]
   },
   {
@@ -23,10 +30,12 @@ export const brandAssets = [
   }
 ];
 
-export async function syncBrandAssets(root = projectRoot) {
+export async function syncBrandAssets(root = projectRoot, consumer) {
   for (const asset of brandAssets) {
     const bytes = await readFile(resolve(root, asset.source));
-    for (const copy of asset.copies) await writeAssetCopy(resolve(root, copy), bytes);
+    for (const copy of asset.copies)
+      if (!consumer || copy.startsWith(consumer + '/'))
+        await writeAssetCopy(resolve(root, copy), bytes);
   }
 }
 
